@@ -6,24 +6,19 @@ defmodule HookBugReproWeb.Components.Item do
   def update(assigns, socket) do
     {:ok,
      socket
-     |> assign(assign_from_top_live_view: assigns.assign_from_top_live_view)
      |> assign(:item, assigns.item)
      |> assign_unrendered_component_assigns()}
   end
 
   @impl true
   def render(assigns) do
-    Process.sleep(200)
-
     ~H"""
     <div id={"item-#{@item}"} phx-hook="PagePositionNotifier">
       <.live_component
         id={"item-header-#{@item}"}
         module={ItemHeader}
         item={@item}
-        assign_from_top_live_view={@assign_from_top_live_view}
       />
-
       <.unrendered_component :if={false} id="unrendered" any_assign={@any_assign} />
     </div>
     """
@@ -35,6 +30,7 @@ defmodule HookBugReproWeb.Components.Item do
 
   defp assign_unrendered_component_assigns(socket) do
     socket
+    |> assign(:any_assign, true)
     |> assign_async(
       :any_assign,
       fn ->

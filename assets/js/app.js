@@ -28,23 +28,7 @@ import topbar from "../vendor/topbar";
 let Hooks = {};
 Hooks.PagePositionNotifier = {
   mounted() {
-    this.observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.intersectionRatio > 0) {
-            this.pushEvent("page_position_update", {});
-          }
-        });
-      },
-      { threshold: 0.1 }
-    );
-    this.observer.observe(this.el);
-  },
-
-  destroyed() {
-    if (this.observer) {
-      this.observer.unobserve(this.el);
-    }
+    this.pushEvent("page_position_update", {});
   },
 };
 const csrfToken = document

@@ -1,8 +1,5 @@
 defmodule HookBugReproWeb.PageLive do
-  require Logger
-
   use HookBugReproWeb, :live_view
-  alias HookBugReproWeb.Router.Helpers, as: Routes
   alias HookBugReproWeb.Components.Item
 
   @all_items [
@@ -14,25 +11,10 @@ defmodule HookBugReproWeb.PageLive do
   def mount(_params, _session, socket) do
     socket =
       socket
-      |> assign(:selected_items, [])
+      |> assign(:selected_items, @all_items)
       |> assign(:filter_options, @all_items)
 
     {:ok, socket}
-  end
-
-  @impl true
-  def handle_params(_, _, socket) do
-    selected_items =
-      if socket.assigns.selected_items != [] do
-        Enum.filter(@all_items, &(&1 in socket.assigns.selected_items))
-      else
-        @all_items
-      end
-
-    {:noreply,
-     socket
-     |> assign(:selected_items, selected_items)
-     |> assign(:assign_from_top_live_view, selected_items)}
   end
 
   @impl true
@@ -44,7 +26,6 @@ defmodule HookBugReproWeb.PageLive do
         module={Item}
         id={"item-#{item}"}
         item={item}
-        assign_from_top_live_view={@assign_from_top_live_view}
       />
     </div>
     """
@@ -73,24 +54,19 @@ defmodule HookBugReproWeb.PageLive do
   def handle_event("toggle_item", params = %{"clicked" => clicked_id}, socket) do
     selected = socket.assigns.selected_items
 
-    socket =
+    selected =
       case params["value"] do
         nil ->
           selected = List.delete(selected, clicked_id)
-          assign(socket, selected_items: selected)
 
         value ->
           selected = selected ++ [value]
-          assign(socket, selected_items: selected)
       end
 
-    {:noreply, push_patch(socket, to: "/")}
+    {:noreply, assign(socket, selected_items: Enum.sort(selected))}
   end
 
   def handle_event("page_position_update", _params, socket) do
-    Process.sleep(200)
-    Logger.info("*** Hook event received")
-
     {:noreply, socket}
   end
 end

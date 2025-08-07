@@ -16,7 +16,7 @@ defmodule HookBugReproWeb.Components.ItemHeader do
 
   def render(assigns) do
     ~H"""
-    <div id="header-#{@item}">
+    <div id={"header-#{@item}"}>
       <.async_result assign={@async_assign}>
         <:loading>
           <div id={@item} class="border border-y-0 bg-red-500 text-white">
